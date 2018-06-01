@@ -13,7 +13,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
 
     @Override
-    @CachePut(value = "devicesDetail", key = "'device:status:'+#p0.name")
+    @CachePut(value = "devicesDetail", key = "'device:status:'+#p0.sn")
     Device save(Device device);
 
 
