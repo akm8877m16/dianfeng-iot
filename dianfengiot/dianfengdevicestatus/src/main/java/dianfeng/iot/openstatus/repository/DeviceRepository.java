@@ -16,7 +16,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @CachePut(value = "devicesDetail", key = "'device:status:'+#p0.sn")
     Device save(Device device);
 
-
+    /*
+     *  there is a bug here, data should always get from redis instead of db, do not forget
+     *  to change in the future
+     */
     @Cacheable(value = "gateWayDetail", key = "'gateway:device:'+#p0", unless="#result==null")
     Device[] findByGateWay(String gateWay);
 
