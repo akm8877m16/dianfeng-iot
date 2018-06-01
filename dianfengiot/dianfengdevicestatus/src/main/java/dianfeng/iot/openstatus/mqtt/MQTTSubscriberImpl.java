@@ -97,7 +97,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
             Device result = deviceService.findBySn(deviceName);
             if(result == null){
                 long startTime = System.currentTimeMillis();
-                Device newDevice = new Device(PayloadUtil.getDeviceType(data[0]).toString(), startTime, PayloadUtil.getDeviceType(data[0]), deviceName, gateway);
+                Device newDevice = new Device("", startTime, PayloadUtil.getDeviceType(data[0]), deviceName, gateway);
                 newDevice.setOpenStatus(openStatus);
                 result = deviceService.save(newDevice);
                 if(result != null){
