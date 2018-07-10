@@ -1,39 +1,50 @@
 package dianfeng.iot.openstatus.entity;
 
 import dianfeng.iot.openstatus.common.DeviceType;
+import io.swagger.models.auth.In;
+import ywh.common.redis.annotation.RedisField;
+import ywh.common.redis.annotation.RedisId;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "device_status")
-public class Device {
+public class Device implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @RedisId
     private Long id;
 
     @Column(nullable = false)//name defined by app user
+    @RedisField
     private String name;
 
+    @RedisField
     private Boolean openStatus;
 
-    @Column(unique = true)           //device name
+    @Column(unique = true)//device name
+    @RedisField(inUniqueKey = true)
     private String sn;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.ORDINAL)   //device type
-    private DeviceType deviceType;
+    @RedisField
+    private Integer deviceType;
 
+    @RedisField
     private long startTime ;
 
     @Column(nullable = false)
+    @RedisField(inUniqueKey = true)
     private String gateWay;
 
+    @RedisField
     private Long updateTime;
 
     public Device(){}
 
-    public Device(String name, long startTime, DeviceType type, String sn, String gateWay){
+    public Device(String name, long startTime, int type, String sn, String gateWay){
         this.name = name;
         this.startTime = startTime;
         this.deviceType = type;
@@ -66,11 +77,11 @@ public class Device {
         this.sn = sn;
     }
 
-    public DeviceType getDeviceType() {
+    public Integer getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(DeviceType deviceType) {
+    public void setDeviceType(Integer deviceType) {
         this.deviceType = deviceType;
     }
 
@@ -100,7 +111,7 @@ public class Device {
 
     @Override
     public String toString(){
-        return "name: " + this.name + " type: " + this.deviceType.toString() + " sn: " + this.sn +
+        return "name: " + this.name + " type: " + this.deviceType + " sn: " + this.sn +
                 " gateWay: " + this.gateWay;
     }
 

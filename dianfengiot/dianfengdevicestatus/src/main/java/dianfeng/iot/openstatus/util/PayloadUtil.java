@@ -28,7 +28,7 @@ public class PayloadUtil {
         return false;
     }
 
-    public static final DeviceType getDeviceType(int head){
+    public static  DeviceType getDeviceType(int head){
         switch (head){
             case PAYLOAD_HEAD_AIRCONDITION:
                 return DeviceType.空调;

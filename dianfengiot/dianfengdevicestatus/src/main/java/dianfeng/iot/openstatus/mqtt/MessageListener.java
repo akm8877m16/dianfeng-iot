@@ -8,12 +8,13 @@ import ywh.common.mqtt.MQTTSubscriber;
 public class MessageListener implements Runnable{
 
     @Autowired
-    MQTTSubscriber mqttSubscriber;
+    MQTTSubscriberImpl mqttSubscriber;
 
     @Override
     public void run() {
+        mqttSubscriber.subscribeTopic("M/#");//receive data M  send data D
         while(true) {
-            mqttSubscriber.subscribeTopic("M/#");//receive data M  send data D
+
         }
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableCaching
+//@EnableCaching
 public class OpenStatusApplication {
 
     @Autowired

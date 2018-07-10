@@ -30,6 +30,10 @@ ywh:
     broker: 39.104.49.84
     port: 1883
     qos: 1
+  redis:
+    address: redis://127.0.0.1:6379
+    password: moreton123
+
 
 eureka:
   instance:

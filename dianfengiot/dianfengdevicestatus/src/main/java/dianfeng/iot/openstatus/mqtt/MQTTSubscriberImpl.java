@@ -65,6 +65,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         cause.printStackTrace();
         try {
             mqttClient.connect(connectionOptions);
+            this.mqttClient.setCallback(this);
         }catch (MqttException e){
             e.printStackTrace();
         }
@@ -97,7 +98,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
             Device result = deviceService.findBySn(deviceName);
             if(result == null){
                 long startTime = System.currentTimeMillis();
-                Device newDevice = new Device("", startTime, PayloadUtil.getDeviceType(data[0]), deviceName, gateway);
+                Device newDevice = new Device("", startTime, PayloadUtil.getDeviceType(data[0]).getValue(), deviceName, gateway);
                 newDevice.setOpenStatus(openStatus);
                 result = deviceService.save(newDevice);
                 if(result != null){
@@ -270,4 +271,11 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         this.password = password;
     }
 
+    public MqttClient getMqttClient() {
+        return mqttClient;
+    }
+
+    public void setMqttClient(MqttClient mqttClient) {
+        this.mqttClient = mqttClient;
+    }
 }

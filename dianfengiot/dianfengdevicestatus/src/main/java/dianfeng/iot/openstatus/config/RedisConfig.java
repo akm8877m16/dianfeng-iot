@@ -1,5 +1,5 @@
 package dianfeng.iot.openstatus.config;
-
+/*
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,3 +53,57 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
 }
+*/
+
+import dianfeng.iot.openstatus.service.rao.DeviceRaoImpl;
+import org.redisson.api.RedissonClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import ywh.common.redis.HashCacheRao;
+import ywh.common.redis.KeysRao;
+import ywh.common.redis.StringCacheRao;
+import ywh.common.redis.impl.HashCacheRaoImpl;
+import ywh.common.redis.impl.KeysRaoImpl;
+import ywh.common.redis.impl.StringRaoImpl;
+
+import javax.annotation.Resource;
+
+@Configuration
+public class RedisConfig{
+    @Resource
+    private RedissonClient redissonClient;
+
+    @Bean
+    public HashCacheRao getHashCacheRao(){
+        HashCacheRaoImpl hashCacheRao = new HashCacheRaoImpl();
+        hashCacheRao.setRedissonClient(redissonClient);
+        return hashCacheRao;
+    }
+
+    @Bean
+    public StringCacheRao getStringCacheRao(){
+        StringRaoImpl stringCacheRao = new StringRaoImpl();
+        stringCacheRao.setRedissonClient(redissonClient);
+        return stringCacheRao;
+    }
+
+    @Bean
+    public KeysRao getKeysRao(){
+        KeysRaoImpl keysRao = new KeysRaoImpl();
+        keysRao.setRedissonClient(redissonClient);
+        return keysRao;
+    }
+
+    @Bean("deviceRao")
+    public DeviceRaoImpl getDeviceRaoImpl(){
+        DeviceRaoImpl deviceRao = new DeviceRaoImpl();
+        deviceRao.setHashCacheRao(getHashCacheRao());
+        deviceRao.setStringCacheRao(getStringCacheRao());
+        deviceRao.setKeysRao(getKeysRao());
+        deviceRao.setSeconds(180);
+        deviceRao.setKeyPrefix("device");
+        return deviceRao;
+    }
+
+}
+
