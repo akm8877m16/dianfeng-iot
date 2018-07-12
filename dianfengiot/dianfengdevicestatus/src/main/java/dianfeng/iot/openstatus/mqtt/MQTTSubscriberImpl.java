@@ -16,6 +16,7 @@ import ywh.common.mqtt.MqttConfig;
 
 import javax.annotation.PreDestroy;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Component
 public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallback {
@@ -64,8 +65,10 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         logger.info("Connection Lost: " + cause.toString());
         cause.printStackTrace();
         try {
-            mqttClient.connect(connectionOptions);
+            this.mqttClient = new MqttClient(brokerUrl, "deviceStatus"+ UUID.randomUUID().toString(), persistence);
             this.mqttClient.setCallback(this);
+            this.mqttClient.connect(this.connectionOptions);
+            this.subscribeTopic("M/#");//receive data M  send data D
         }catch (MqttException e){
             e.printStackTrace();
         }
@@ -181,7 +184,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         this.connectionOptions = new MqttConnectOptions();
 
         try {
-            this.mqttClient = new MqttClient(brokerUrl, "deviceStatus", persistence);
+            this.mqttClient = new MqttClient(brokerUrl, "deviceStatus"+ UUID.randomUUID().toString(), persistence);
             this.connectionOptions.setCleanSession(true);
             if (true == withUserNamePass) {
                 if (!this.password.isEmpty()) {
@@ -191,8 +194,9 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
                     this.connectionOptions.setUserName(this.userName);
                 }
             }
-            this.mqttClient.connect(this.connectionOptions);
             this.mqttClient.setCallback(this);
+            this.mqttClient.connect(this.connectionOptions);
+            this.subscribeTopic("M/#");//receive data M  send data D
         } catch (MqttException me) {
             me.printStackTrace();
         }
@@ -214,9 +218,11 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
             this.mqttClient = new MqttClient(brokerUrl, MqttClient.generateClientId(), persistence);
             this.connectionOptions.setCleanSession(true);
             this.connectionOptions.setKeepAliveInterval(10);
-            this.mqttClient.connect(this.connectionOptions);
+            this.connectionOptions.setConnectionTimeout(20);
+            this.connectionOptions.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
             this.mqttClient.setCallback(this);
-
+            this.mqttClient.connect(this.connectionOptions);
+            this.subscribeTopic("M/#");//receive data M  send data D
         } catch (MqttException me) {
             me.printStackTrace();
         }

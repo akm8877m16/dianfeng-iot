@@ -21,6 +21,7 @@ public class OpenStatusApplication {
         SpringApplication.run(OpenStatusApplication.class, args);
     }
 
+    /*
     @Bean
     public CommandLineRunner schedulingRunner(TaskExecutor executor) {
         return new CommandLineRunner() {
@@ -29,4 +30,5 @@ public class OpenStatusApplication {
             }
         };
     }
+    */
 }

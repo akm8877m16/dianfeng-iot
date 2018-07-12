@@ -100,7 +100,7 @@ public class RedisConfig{
         deviceRao.setHashCacheRao(getHashCacheRao());
         deviceRao.setStringCacheRao(getStringCacheRao());
         deviceRao.setKeysRao(getKeysRao());
-        deviceRao.setSeconds(180);
+        deviceRao.setSeconds(60);
         deviceRao.setKeyPrefix("device");
         return deviceRao;
     }
