@@ -98,6 +98,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         if(PayloadUtil.deviceTypeCheck(data[0])){
             boolean openStatus = PayloadUtil.getOpenStatus(data);
             String deviceName = PayloadUtil.getDeviceName(message.getPayload());
+            System.out.println(deviceName);
             Device result = deviceService.findBySn(deviceName);
             if(result == null){
                 long startTime = System.currentTimeMillis();

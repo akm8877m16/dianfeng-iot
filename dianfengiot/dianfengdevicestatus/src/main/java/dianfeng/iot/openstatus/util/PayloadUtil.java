@@ -46,7 +46,7 @@ public class PayloadUtil {
     public static final boolean getOpenStatus(byte[] payload){
         int head = payload[0];
         if(head == PAYLOAD_HEAD_AIRCONDITION){
-            if(payload.length == PAYLOAD_LENGTH_STATUS_AIRCONDITION){
+            if(payload.length >= PAYLOAD_LENGTH_STATUS_AIRCONDITION){
                 return int2Bool(payload[7]);
             }
 
@@ -56,7 +56,7 @@ public class PayloadUtil {
 
         }
         if(head == PAYLOAD_HEAD_NEWFAN){
-            if(payload.length == PAYLOAD_LENGTH_STATUS_NEWFAN){
+            if(payload.length >= PAYLOAD_LENGTH_STATUS_NEWFAN){
                 return int2Bool(payload[6]);
             }
 
@@ -70,21 +70,21 @@ public class PayloadUtil {
 
         }
         if(head == PAYLOAD_HEAD_HEAT){
-            if(payload.length == PAYLOAD_LENGTH_STATUS_HEAT){
+            if(payload.length >= PAYLOAD_LENGTH_STATUS_HEAT){
                 return int2Bool(payload[6]);
             }
 
-            if(payload.length == PAYLOAD_LENGTH_OFF_HEAT){
+            if(payload.length >= PAYLOAD_LENGTH_OFF_HEAT){
                 return int2Bool(payload[6]);
             }
 
         }
         if(head == PAYLOAD_HEAD_HOST){
-            if(payload.length == PAYLOAD_LENGTH_STATUS_HOST){
+            if(payload.length >= PAYLOAD_LENGTH_STATUS_HOST){
                 return int2Bool(payload[9]);
             }
 
-            if(payload.length == PAYLOAD_LENGTH_OFF_HOST){
+            if(payload.length >= PAYLOAD_LENGTH_OFF_HOST){
                 return int2Bool(payload[6]);
             }
 
