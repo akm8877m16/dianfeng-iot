@@ -95,10 +95,14 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         String gateway = topic.substring(2).toUpperCase();
         //air condition
         byte[] data = message.getPayload();
+
         if(PayloadUtil.deviceTypeCheck(data[0])){
             boolean openStatus = PayloadUtil.getOpenStatus(data);
             String deviceName = PayloadUtil.getDeviceName(message.getPayload());
-            System.out.println(deviceName);
+            for (byte i : data){
+                System.out.println(i);
+            }
+            System.out.println(deviceName + " openStatus: "+openStatus);
             Device result = deviceService.findBySn(deviceName);
             if(result == null){
                 long startTime = System.currentTimeMillis();
@@ -114,6 +118,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
                 result = deviceService.save(result);
                 if(result != null){
                     System.out.println("device status updated: " + deviceName);
+                    System.out.println(result);
                 }
             }
         }

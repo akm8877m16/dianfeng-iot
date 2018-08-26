@@ -112,7 +112,7 @@ public class Device implements Serializable{
     @Override
     public String toString(){
         return "name: " + this.name + " type: " + this.deviceType + " sn: " + this.sn +
-                " gateWay: " + this.gateWay;
+                " gateWay: " + this.gateWay +" openStatus: "+this.openStatus+" updateTime: " + this.updateTime;
     }
 
 }

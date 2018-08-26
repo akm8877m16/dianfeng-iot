@@ -47,7 +47,9 @@ public class PayloadUtil {
         int head = payload[0];
         if(head == PAYLOAD_HEAD_AIRCONDITION){
             if(payload.length == PAYLOAD_LENGTH_STATUS_AIRCONDITION){
-                return int2Bool(payload[7]);
+                Boolean status = int2Bool(payload[7]);
+                System.out.println("air condition status: "+ status + " payload code: "+ payload[7]);
+                return status;
             }
 
             //if(payload.length >= PAYLOAD_LENGTH_OFF_AIRCONDITION){

@@ -33,26 +33,24 @@ public class DeviceServiceImpl implements DeviceService {
             return deviceList.get(0);
         }
         //get it from dao and add to redis
-        Device result = deviceRepository.findBySn(name);
-        if(result != null){
-            deviceRao.add(result);
-            return result;
-        }
+        //Device result = deviceRepository.findBySn(name);
+        //if(result != null){
+        //    deviceRao.add(result);
+        //    return result;
+        //}
         return null;
     }
 
     @Override
     public Device save(Device device){
-        Device result = deviceRepository.save(device);
-        if(result != null){
-            Device raoResult = deviceRao.getUnique(device);
-            if(raoResult != null){
-                deviceRao.update(result);
-            }else{
-                deviceRao.add(result);
-            }
+        //Device result = deviceRepository.save(device);
+        Device raoResult = deviceRao.getUnique(device);
+        if(raoResult != null){
+            deviceRao.update(device);
+        }else{
+            deviceRao.add(device);
         }
-        return result;
+        return raoResult;
     }
 
     @Override
