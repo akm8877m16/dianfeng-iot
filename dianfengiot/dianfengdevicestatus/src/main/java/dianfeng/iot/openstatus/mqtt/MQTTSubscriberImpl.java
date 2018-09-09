@@ -83,43 +83,24 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
      */
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        // Called when a message arrives from the server that matches any
-        // subscription made by the client
-        //String time = new Timestamp(System.currentTimeMillis()).toString();
-        //System.out.println();
-        //System.out.println("***********************************************************************");
-        //System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic + "  Message: "
-        //+ new String(message.getPayload()));
-        //System.out.println("***********************************************************************");
-        //System.out.println();
         String gateway = topic.substring(2).toUpperCase();
-        //air condition
         byte[] data = message.getPayload();
-
         if(PayloadUtil.deviceTypeCheck(data[0])){
             boolean openStatus = PayloadUtil.getOpenStatus(data);
             String deviceName = PayloadUtil.getDeviceName(message.getPayload());
-            for (byte i : data){
-                System.out.println(i);
-            }
-            System.out.println(deviceName + " openStatus: "+openStatus);
-            Device result = deviceService.findBySn(deviceName);
+            Device target = new Device(gateway,deviceName);
+            Device result = deviceService.findByUnique(target);
             if(result == null){
                 long startTime = System.currentTimeMillis();
                 Device newDevice = new Device("", startTime, PayloadUtil.getDeviceType(data[0]).getValue(), deviceName, gateway);
                 newDevice.setOpenStatus(openStatus);
-                result = deviceService.save(newDevice);
-                if(result != null){
-                    System.out.println("new device status added: " + deviceName);
-                }
+                deviceService.save(newDevice);
+                System.out.println("new device status added: " + deviceName);
             }else{
                 result.setOpenStatus(openStatus);
                 result.setUpdateTime(result.getUpdateTime()+1);
-                result = deviceService.save(result);
-                if(result != null){
-                    System.out.println("device status updated: " + deviceName);
-                    System.out.println(result);
-                }
+                deviceService.update(result);
+                System.out.println("device status updated: " + deviceName);
             }
         }
     }

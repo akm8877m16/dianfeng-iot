@@ -59,11 +59,9 @@ public class DeviceController {
             return ResultUtil.success("no device available");
         }
         device.setName(deviceBean.getName());
-        device = deviceService.save(device);
-        if(device != null){
-            return ResultUtil.success(device);
-        }
-        return ResultUtil.success("name update fail");
+        deviceService.update(device);
+        return ResultUtil.success(device);
+
     }
 
 }
