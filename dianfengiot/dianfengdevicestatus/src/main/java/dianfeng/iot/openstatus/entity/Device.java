@@ -14,11 +14,9 @@ public class Device implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @RedisId
-    private Long id;
+    private String id;
 
     @Column(nullable = false)//name defined by app user
-    @RedisField
     private String name;
 
     @RedisField
@@ -29,17 +27,13 @@ public class Device implements Serializable{
     private String sn;
 
     @Column(nullable = false)
-    @RedisField
     private Integer deviceType;
 
-    @RedisField
     private long startTime ;
 
     @Column(nullable = false)
-    @RedisField(inUniqueKey = true)
     private String gateWay;
 
-    @RedisField
     private Long updateTime;
 
     public Device(){}
@@ -51,6 +45,7 @@ public class Device implements Serializable{
         this.sn = sn;
         this.gateWay = gateWay;
         this.updateTime = 1l;
+        this.id = sn;
     }
 
     public String getName() {
@@ -108,6 +103,8 @@ public class Device implements Serializable{
     public void setUpdateTime(Long updateTime) {
         this.updateTime = updateTime;
     }
+
+
 
     @Override
     public String toString(){

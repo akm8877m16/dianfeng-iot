@@ -67,4 +67,19 @@ public class DeviceServiceImpl implements DeviceService {
         return result;
 
     }
+
+    /**
+     *  典峰简化redis操作版本
+     */
+
+    @Override
+    public boolean findStatusBySn(String sn) {
+        String res = deviceRao.findStatusBySn(sn);
+        return Boolean.valueOf(res);
+    }
+
+    @Override
+    public boolean saveStatus(String sn, boolean status){
+        return deviceRao.saveStatus(sn,status);
+    }
 }

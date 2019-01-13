@@ -1,20 +1,38 @@
 package dianfeng.iot.openstatus.mqtt;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ywh.common.mqtt.MQTTSubscriber;
+import dianfeng.iot.openstatus.entity.Device;
+import dianfeng.iot.openstatus.service.DeviceService;
+import dianfeng.iot.openstatus.util.PayloadUtil;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component
+
 public class MessageListener implements Runnable{
 
-    @Autowired
-    MQTTSubscriberImpl mqttSubscriber;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    String topic;
+    MqttMessage message;
+    DeviceService deviceService;
+
+    public MessageListener(String topic, MqttMessage message,DeviceService deviceService){
+        this.topic = topic;
+        this.message = message;
+        this.deviceService = deviceService;
+    }
 
     @Override
     public void run() {
-        mqttSubscriber.subscribeTopic("M/#");//receive data M  send data D
-        while(true) {
+        String gateway = topic.substring(2).toUpperCase();
+        //air condition
+        byte[] data = message.getPayload();
 
+        if(PayloadUtil.deviceTypeCheck(data[0])){
+            boolean openStatus = PayloadUtil.getOpenStatus(data);
+            String deviceName = PayloadUtil.getDeviceName(message.getPayload());
+            deviceService.saveStatus(deviceName,openStatus);
+            logger.info(gateway+" message handle success");
         }
     }
 }

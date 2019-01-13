@@ -14,21 +14,8 @@ import org.springframework.core.task.TaskExecutor;
 //@EnableCaching
 public class OpenStatusApplication {
 
-    @Autowired
-    Runnable MessageListener;
-
     public static void main(String[] args) {
         SpringApplication.run(OpenStatusApplication.class, args);
     }
 
-    /*
-    @Bean
-    public CommandLineRunner schedulingRunner(TaskExecutor executor) {
-        return new CommandLineRunner() {
-            public void run(String... args) throws Exception {
-                executor.execute(MessageListener);
-            }
-        };
-    }
-    */
 }

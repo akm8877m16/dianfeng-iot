@@ -3,23 +3,30 @@ package dianfeng.iot.openstatus.mqtt;
 import dianfeng.iot.openstatus.entity.Device;
 import dianfeng.iot.openstatus.service.DeviceService;
 import dianfeng.iot.openstatus.util.PayloadUtil;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import ywh.common.mqtt.MQTTSubscriber;
 import ywh.common.mqtt.MqttConfig;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 @Component
-public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallback {
+public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallback,InitializingBean {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${ywh.mqtt.broker:127.0.0.1}")
     private String broker = "39.104.49.84";
@@ -38,8 +45,13 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
 
     private final String TCP = "tcp://";
 
+    private ThreadPoolExecutor executor;
+
     @Autowired
     DeviceService deviceService;
+
+    //@Resource
+    //Executor taskExecutor;
 
     private String brokerUrl = null;
     final private String colon = ":";
@@ -47,8 +59,6 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
     private MqttClient mqttClient = null;
     private MqttConnectOptions connectionOptions = null;
     private MemoryPersistence persistence = null;
-
-    private static final Logger logger = LoggerFactory.getLogger(MQTTSubscriberImpl.class);
 
     public MQTTSubscriberImpl() {
         this.config();
@@ -83,45 +93,8 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
      */
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        // Called when a message arrives from the server that matches any
-        // subscription made by the client
-        //String time = new Timestamp(System.currentTimeMillis()).toString();
-        //System.out.println();
-        //System.out.println("***********************************************************************");
-        //System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic + "  Message: "
-        //+ new String(message.getPayload()));
-        //System.out.println("***********************************************************************");
-        //System.out.println();
-        String gateway = topic.substring(2).toUpperCase();
-        //air condition
-        byte[] data = message.getPayload();
-
-        if(PayloadUtil.deviceTypeCheck(data[0])){
-            boolean openStatus = PayloadUtil.getOpenStatus(data);
-            String deviceName = PayloadUtil.getDeviceName(message.getPayload());
-            for (byte i : data){
-                System.out.println(i);
-            }
-            System.out.println(deviceName + " openStatus: "+openStatus);
-            Device result = deviceService.findBySn(deviceName);
-            if(result == null){
-                long startTime = System.currentTimeMillis();
-                Device newDevice = new Device("", startTime, PayloadUtil.getDeviceType(data[0]).getValue(), deviceName, gateway);
-                newDevice.setOpenStatus(openStatus);
-                result = deviceService.save(newDevice);
-                if(result != null){
-                    System.out.println("new device status added: " + deviceName);
-                }
-            }else{
-                result.setOpenStatus(openStatus);
-                result.setUpdateTime(result.getUpdateTime()+1);
-                result = deviceService.save(result);
-                if(result != null){
-                    System.out.println("device status updated: " + deviceName);
-                    System.out.println(result);
-                }
-            }
-        }
+                MessageListener messageListener = new MessageListener(topic,message,deviceService);
+                executor.execute(messageListener);
     }
 
     /*
@@ -170,8 +143,11 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
     public void disconnect() {
         try {
             this.mqttClient.disconnect();
-        } catch (MqttException me) {
-            logger.error("ERROR", me);
+            executor.awaitTermination(5,TimeUnit.SECONDS);
+        } catch (MqttException exp) {
+            logger.error("ERROR", exp);
+        }catch (InterruptedException exp){
+            logger.error("executor shutdown interruptedException",exp);
         }
     }
 
@@ -233,6 +209,17 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
             me.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        executor = new ThreadPoolExecutor(10, 15, 1, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(1000), new DefaultThreadFactory("mqtt_message_handle_pool"), new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                    logger.error("too many mqtt messages");
+            }
+        });
     }
 
     @PreDestroy

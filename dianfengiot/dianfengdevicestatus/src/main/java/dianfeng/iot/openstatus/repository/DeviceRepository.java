@@ -8,19 +8,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     // 使用 p0 做key  这里碰巧设备名称就可以作为key 来唯一标识
-    @Cacheable(value = "devicesDetail", key = "'device:status:'+#p0", unless="#result==null")
+    //@Cacheable(value = "devicesDetail", key = "'device:status:'+#p0", unless="#result==null")
     Device findBySn(String name);
 
 
     @Override
-    @CachePut(value = "devicesDetail", key = "'device:status:'+#p0.sn")
+    //@CachePut(value = "devicesDetail", key = "'device:status:'+#p0.sn")
     Device save(Device device);
 
     /*
      *  there is a bug here, data should always get from redis instead of db, do not forget
      *  to change in the future
      */
-    @Cacheable(value = "gateWayDetail", key = "'gateway:device:'+#p0", unless="#result==null")
+    //@Cacheable(value = "gateWayDetail", key = "'gateway:device:'+#p0", unless="#result==null")
     Device[] findByGateWay(String gateWay);
 
 }

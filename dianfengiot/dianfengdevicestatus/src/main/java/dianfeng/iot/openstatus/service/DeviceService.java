@@ -10,4 +10,8 @@ public interface DeviceService {
 
     Device[] findByGateWay(String gateWay);
 
+    boolean findStatusBySn(String sn);
+
+    boolean saveStatus(String sn, boolean status);
+
 }
