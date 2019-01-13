@@ -48,6 +48,11 @@ public class Device implements Serializable{
         this.id = sn;
     }
 
+    public Device(String gateWay,String sn){
+        this.gateWay = gateWay;
+        this.sn = sn;
+    }
+
     public String getName() {
         return name;
     }
@@ -103,7 +108,6 @@ public class Device implements Serializable{
     public void setUpdateTime(Long updateTime) {
         this.updateTime = updateTime;
     }
-
 
 
     @Override

@@ -6,12 +6,15 @@ public interface DeviceService {
 
     Device findBySn(String sn);
 
-    Device save(Device device);
+    void save(Device device);
+
+    void update(Device device);
 
     Device[] findByGateWay(String gateWay);
 
     boolean findStatusBySn(String sn);
 
     boolean saveStatus(String sn, boolean status);
+
 
 }

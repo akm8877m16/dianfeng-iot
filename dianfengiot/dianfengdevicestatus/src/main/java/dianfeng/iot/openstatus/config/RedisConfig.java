@@ -62,6 +62,7 @@ import org.springframework.context.annotation.Configuration;
 import ywh.common.redis.HashCacheRao;
 import ywh.common.redis.KeysRao;
 import ywh.common.redis.StringCacheRao;
+import ywh.common.redis.globalIdGenerator.IdGenerator;
 import ywh.common.redis.impl.HashCacheRaoImpl;
 import ywh.common.redis.impl.KeysRaoImpl;
 import ywh.common.redis.impl.StringRaoImpl;
@@ -100,9 +101,16 @@ public class RedisConfig{
         deviceRao.setHashCacheRao(getHashCacheRao());
         deviceRao.setStringCacheRao(getStringCacheRao());
         deviceRao.setKeysRao(getKeysRao());
-        deviceRao.setSeconds(60);
+        deviceRao.setSeconds(120);
         deviceRao.setKeyPrefix("device");
         return deviceRao;
+    }
+
+    @Bean("idGenerator")
+    public IdGenerator getIdGenerator(){
+        IdGenerator idGenerator = new IdGenerator();
+        idGenerator.setIdName("deviceStatusIdGenerator");
+        return idGenerator;
     }
 
 }

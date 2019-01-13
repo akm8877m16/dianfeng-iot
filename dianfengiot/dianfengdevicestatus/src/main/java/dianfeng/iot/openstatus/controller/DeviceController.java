@@ -63,11 +63,9 @@ public class DeviceController {
             return ResultUtil.success("no device available");
         }
         device.setName(deviceBean.getName());
-        device = deviceService.save(device);
-        if(device != null){
-            return ResultUtil.success(device);
-        }
-        return ResultUtil.success("name update fail");
+        deviceService.update(device);
+        return ResultUtil.success(device);
+
     }
 
     @ApiOperation(value = "返回设备状态 新",notes = "openStatus 0: 关, 1: 开, name: 设备名称,用户可改")

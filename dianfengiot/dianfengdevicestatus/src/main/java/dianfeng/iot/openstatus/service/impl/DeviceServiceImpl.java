@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ywh.common.redis.globalIdGenerator.IdGenerator;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +26,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Resource
     private DeviceRaoImpl deviceRao;
+
+    @Resource
+    private IdGenerator idGenerator;
 
     @Override
     public Device findBySn(String name){
@@ -42,15 +47,22 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Device save(Device device){
+    public Device findByUnique(Device device){
+        Device result = deviceRao.getUnique(device);
+        return result;
+    }
+
+    @Override
+    public void save(Device device){
         //Device result = deviceRepository.save(device);
-        Device raoResult = deviceRao.getUnique(device);
-        if(raoResult != null){
-            deviceRao.update(device);
-        }else{
-            deviceRao.add(device);
-        }
-        return raoResult;
+        long id = idGenerator.generatNewId();
+        device.setId(id);
+        deviceRao.add(device);
+    }
+
+    @Override
+    public void update(Device device){
+        deviceRao.update(device);
     }
 
     @Override
